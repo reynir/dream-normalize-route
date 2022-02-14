@@ -1,0 +1,22 @@
+opam-version: "2.0"
+maintainer: "Reynir Björnsson <reynir@reynir.dk>"
+authors: ["Reynir Björnsson <reynir@reynir.dk>"]
+homepage: "https://github.com/reynir/dream-normalize-route"
+dev-repo: "git+https://github.com/reynir/dream-normalize-route.git"
+bug-reports: "https://github.com/reynir/dream-normalize-route/issues"
+license: "ISC"
+
+build: [
+  ["dune" "subst"] {dev}
+  ["dune" "build" "-p" name "-j" jobs]
+  ["dune" "runtest" "-p" name "-j" jobs] {with-test}
+]
+
+depends: [
+  "ocaml"
+  "dune" {>= "2.9.0"}
+  "dream" {>= "1.0.0~alpha2"}
+  "alcotest" {with-test}
+]
+
+synopsis: "Redirect routes to a canonical form wrt. trailing slash"
