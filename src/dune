@@ -1,0 +1,4 @@
+(library
+ (public_name dream-normalize-route)
+ (name dream_normalize_route)
+ (libraries dream))
