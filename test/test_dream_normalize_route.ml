@@ -1,10 +1,13 @@
+let not_found _req =
+  Dream.respond ~status:`Not_Found "NOT FOUND"
+
 let handler req =
   Dream.respond ("/" ^ String.concat "/" (Dream.path req))
 
 let run routes target =
   let open Lwt.Syntax in
   let path =
-    let* resp = (Dream.router routes) Dream.not_found (Dream.request ~target "") in
+    let* resp = (Dream.router routes) not_found (Dream.request ~target "") in
     Dream.body resp
   in
   Lwt_main.run path
@@ -37,6 +40,15 @@ let test_extra_slash_slash () =
 let test_extra_slash_no_slash () =
   test "extra slash" "/hello-world//" "/hello-world" "/hello-world/"
 
+let test_variable_slash_slash () =
+  test "variable" "/:var/" "/hello/" "/hello/"
+
+let test_variable_slash_no_slash () =
+  test "variable" "/:var/" "/hello" "/hello/"
+
+let test_path_wildcard () =
+  test "path wildcard" "/**" "/hello-world" "/hello-world"
+
 let () =
   let open Alcotest in
   run "Dream_normalize_route" [
@@ -51,5 +63,12 @@ let () =
     "extra-slash", [
       test_case "Extra slash/slash" `Quick test_extra_slash_slash;
       test_case "Extra slash/no slash" `Quick test_extra_slash_no_slash;
+    ];
+    "variable", [
+      test_case "Variable slash/slash" `Quick test_variable_slash_slash;
+      test_case "Variable slash/no slash" `Quick test_variable_slash_no_slash;
+    ];
+    "path-wildcard", [
+      test_case "Path wildcard" `Quick test_path_wildcard;
     ];
   ]
