@@ -24,7 +24,12 @@ let redirect req =
     | path ->
       List.rev ("" :: path)
   in
-  Dream.redirect ~status:`Permanent_Redirect req ("/" ^ String.concat "/" path)
+  let queries = Dream.all_queries req in
+  let queries = if queries = [] then ""
+    else
+      "?" ^ String.concat "&" (List.map (fun (k, v) -> k^"="^v) queries)
+  in
+  Dream.redirect ~status:`Permanent_Redirect req ("/" ^ String.concat "/" path ^ queries)
 
 
 let normalize meth pattern handler =

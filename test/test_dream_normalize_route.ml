@@ -2,7 +2,7 @@ let not_found _req =
   Dream.respond ~status:`Not_Found "NOT FOUND"
 
 let handler req =
-  Dream.respond ("/" ^ String.concat "/" (Dream.path req))
+  Dream.respond (Dream.target req)
 
 let run routes target =
   let open Lwt.Syntax in
@@ -14,7 +14,7 @@ let run routes target =
 
 let test check_string pattern path expected =
   let routes = Dream_normalize_route.normalize Dream.get pattern handler in
-  Alcotest.(check string check_string) (run routes path) expected
+  Alcotest.(check string check_string) expected (run routes path)
 
 let test_root () =
   test "root" "/" "/" "/"
@@ -49,6 +49,18 @@ let test_variable_slash_no_slash () =
 let test_path_wildcard () =
   test "path wildcard" "/**" "/hello-world" "/hello-world"
 
+let test_empty_query () =
+  test "empty query" "/foo" "/foo/?" "/foo"
+
+let test_one_query () =
+  test "one query" "/foo" "/foo/?x=42" "/foo?x=42"
+
+let test_two_queries () =
+  test "two queries" "/foo" "/foo/?x=1&y=2" "/foo?x=1&y=2"
+
+let test_one_empty_query () =
+  test "one empty query" "/foo" "/foo/?bar" "/foo?bar="
+
 let () =
   let open Alcotest in
   run "Dream_normalize_route" [
@@ -70,5 +82,11 @@ let () =
     ];
     "path-wildcard", [
       test_case "Path wildcard" `Quick test_path_wildcard;
+    ];
+    "queries", [
+      test_case "Empty query" `Quick test_empty_query;
+      test_case "One query" `Quick test_one_query;
+      test_case "Two queries" `Quick test_two_queries;
+      test_case "One empty query" `Quick test_one_empty_query;
     ];
   ]
