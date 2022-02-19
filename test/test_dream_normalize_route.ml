@@ -61,6 +61,12 @@ let test_two_queries () =
 let test_one_empty_query () =
   test "one empty query" "/foo" "/foo/?bar" "/foo?bar="
 
+let test_query_data_with_plus_sign () =
+  test "query data with + sign" "/foo" "/foo/?bar=2%2B2" "/foo?bar=2%2B2"
+
+let test_query_with_plus_sign () =
+  test "query with + sign" "/foo" "/foo/?a%2Bb=c" "/foo?a%2Bb=c"
+
 let () =
   let open Alcotest in
   run "Dream_normalize_route" [
@@ -88,5 +94,9 @@ let () =
       test_case "One query" `Quick test_one_query;
       test_case "Two queries" `Quick test_two_queries;
       test_case "One empty query" `Quick test_one_empty_query;
+    ];
+    "queries-encoding", [
+      test_case "Query data with plus sign" `Quick test_query_data_with_plus_sign;
+      test_case "Query with plus sign" `Quick test_query_with_plus_sign;
     ];
   ]
