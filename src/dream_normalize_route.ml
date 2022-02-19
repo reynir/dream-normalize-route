@@ -26,8 +26,7 @@ let redirect req =
   in
   let queries = Dream.all_queries req in
   let queries = if queries = [] then ""
-    else
-      "?" ^ String.concat "&" (List.map (fun (k, v) -> k^"="^v) queries)
+    else "?" ^ Dream.to_form_urlencoded queries
   in
   Dream.redirect ~status:`Permanent_Redirect req ("/" ^ String.concat "/" path ^ queries)
 
